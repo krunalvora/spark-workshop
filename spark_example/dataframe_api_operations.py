@@ -1,4 +1,5 @@
 from pyspark.sql import SparkSession
+from pyspark.sql import functions as functions
 
 spark = (SparkSession
          .builder
@@ -14,7 +15,12 @@ ev_df.show()
 
 ev_df = ev_df.filter(ev_df['Electric Range'] >= 337)
 
-ev_df.show()
+(ev_df.groupby("City")
+ .agg(functions.count("*").alias("count"))
+ .orderBy("count", ascending=False)
+ .limit(3)
+ .show())
+
 print(f"Count of EVs with range >= 337: {ev_df.count()}")
 
 # Write to CSV file
